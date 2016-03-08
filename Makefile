@@ -1,7 +1,7 @@
-INCS= system.h base.h config.h task.h queue.h smphr.h mutex.h timer.h
+INCS= system.h base.h config.h task.h queue.h smphr.h mutex.h
 
 EXAMPLESDIR= examples
-EXMPLS= simple semaphore queues timer timer-test
+EXMPLS= simple semaphore queues
 EXBINS= $(patsubst %,$(EXAMPLESDIR)/%,$(EXMPLS))
 
 SYSTEM?= posix

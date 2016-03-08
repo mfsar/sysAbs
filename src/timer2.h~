@@ -1,8 +1,0 @@
-#ifndef __SYSTEM_TIMER_H__
-#define __SYSTEM_TIMER_H__
-
-#include <system/base.h>
-#include <stdbool.h>
-
-bool timer_create(int a);
-
