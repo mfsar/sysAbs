@@ -22,19 +22,19 @@ static void *posix_task_wrapper(void *arg);
 void
 system_init()
 {
-    task_t test_task;
+    task_t timer_task;
 
     memset(tasks, 0, sizeof(tasks));
 
-    tmr_init(&test_task);
+    tmr_init(&timer_task);
 }
 
 void
 system_ticks_to_timespec(system_tick_t ticks, struct timespec *ts)
 {
-    ts->tv_sec = ticks / SYSTEM_CONFIG_POSIX_TICKS_1S;
-    ticks %= SYSTEM_CONFIG_POSIX_TICKS_1S;
-    ts->tv_nsec = NSEC_IN_SEC / SYSTEM_CONFIG_POSIX_TICKS_1S * ticks;
+    ts->tv_sec = ticks / SYSTEM_TICK_RATE_MS;
+    ticks %= SYSTEM_TICK_RATE_MS;
+    ts->tv_nsec = NSEC_IN_SEC / SYSTEM_TICK_RATE_MS * ticks;
 }
 
 void
@@ -57,8 +57,8 @@ system_get_tick_count(void)
     struct timespec ct;
 
     clock_gettime(CLOCK_REALTIME, &ct);
-    return (ct.tv_sec * SYSTEM_CONFIG_POSIX_TICKS_1S)
-        + (ct.tv_nsec * (SYSTEM_CONFIG_POSIX_TICKS_1S / NSEC_IN_SEC));
+    return (ct.tv_sec * SYSTEM_TICK_RATE_MS)
+        + (ct.tv_nsec / (NSEC_IN_SEC / SYSTEM_TICK_RATE_MS));
 }
 
 bool

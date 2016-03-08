@@ -26,7 +26,7 @@ tmr_init(task_t *t)
     
     task_create(t, tmr_run, NULL, NULL, 0, 0);
     mutex_init(&psx_tmr_mtx, NULL);
-    smphr_init(&psx_tmr_s, 1, NULL);
+    smphr_init(&psx_tmr_s, true, NULL);
     
     timer_list = (tmr_t*) malloc(sizeof(tmr_t));
     timer_list->handle = (posix_timer_t*) malloc(sizeof(posix_timer_t));

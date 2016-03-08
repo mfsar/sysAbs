@@ -9,14 +9,15 @@
 #  include <FreeRTOS/FreeRTOS.h>
 #  define SYSTEM_NO_WAIT                            ((portTickType)0)
 #  define SYSTEM_MAX_WAIT                           (portMAX_DELAY)
+#  define SYSTEM_TICK_RATE_MS                       (portTICK_RATE_MS)
 #  define SYSTEM_TASK_MODIFIER                      __task
 typedef portTickType system_tick_t;
 #elif SYSTEM_CONFIG_TYPE_POSIX == 1
 #  include <stdint.h>
 #  include <stdbool.h>
 
-#  if !defined(SYSTEM_CONFIG_POSIX_TICKS_1S)
-#    define SYSTEM_CONFIG_POSIX_TICKS_1S                  (1000)
+#  if !defined(SYSTEM_TICK_RATE_MS)
+#    define SYSTEM_TICK_RATE_MS                           (1000)
 #  endif
 
 #  if !defined(SYSTEM_CONFIG_POSIX_MAX_TASKS)

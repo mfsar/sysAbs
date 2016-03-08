@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 smphr_t s;
 
@@ -28,7 +29,7 @@ int main(void)
     printf("System abstraction test - POSIX implementation\n");
     printf("Semaphore example application\n");
 
-    smphr_init(&s, 1, NULL);
+    smphr_init(&s, false, NULL);
 
     task_create(&task1h, task, (void*)1, NULL, 0, 0);
     task_create(&task2h, task, (void*)2, NULL, 0, 0);
@@ -38,3 +39,4 @@ int main(void)
 
     return 0;
 }
+

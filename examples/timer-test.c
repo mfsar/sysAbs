@@ -81,7 +81,7 @@ void test_others(void* arg)
     printf("Timer 3 stops at             ----> 3500 ms \n");
     printf("Timer 3 starts at            ----> 4500 ms \n");
     printf("Timer 5 starts at            ----> 5000 period 1000  ms \n");
-    printf("Timer 6 starts at               ----> 5250 period 500 ms \n");
+    printf("Timer 6 starts at            ----> 5250 period 500 ms \n");
     printf("Timer 4 starts at            ----> 7500 ms \n");
     printf("Timer 4 stops at             ----> 8500 ms \n");
     printf("Timer 4 reset stop at        ----> 9500 ms \n");

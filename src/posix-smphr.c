@@ -12,11 +12,11 @@
 #include <stdio.h>
 
 bool
-smphr_init(smphr_t *s, unsigned int value, const char *name)
+smphr_init(smphr_t *s, bool taken, const char *name)
 {
     *s = malloc(sizeof(sem_t));
 
-    return sem_init(*(sem_t **)s, 0, value) == 0;
+    return sem_init(*(sem_t **)s, 0, taken ? 0 : 1) == 0;
 }
 
 bool

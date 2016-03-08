@@ -6,7 +6,6 @@
 #include <FreeRTOS/semphr.h>
 
 #include <stdbool.h>
-#include <stddef.h>
 
 bool
 mutex_init(mutex_t *m, const char *name)
@@ -25,11 +24,11 @@ mutex_init(mutex_t *m, const char *name)
 bool
 mutex_lock(mutex_t m, system_tick_t ticks)
 {
-    return xSemaphoreTake(*(xSemaphoreHandle *)m, ticks) == pdTRUE;
+    return xSemaphoreTake(m, ticks) == pdTRUE;
 }
 
 bool
 mutex_unlock(mutex_t m)
 {
-    return xSemaphoreGive(*(xSemaphoreHandle *)m) == pdTRUE;
+    return xSemaphoreGive(m) == pdTRUE;
 }

@@ -28,7 +28,7 @@ queue_create(queue_t *queue, size_t size, size_t elsize, const char *name)
     }
     
     /* TODO: create names for queue mutex and sem */
-    if(!smphr_init(&q->sem, 0, NULL)) {
+    if(!smphr_init(&q->sem, true, NULL)) {
         goto error;
     }
 

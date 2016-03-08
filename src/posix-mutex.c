@@ -7,7 +7,7 @@
 bool
 mutex_init(mutex_t *m, const char *name)
 {
-    return smphr_init((smphr_t *)m, 1, name);
+    return smphr_init((smphr_t *)m, false, name);
 }
 
 bool
