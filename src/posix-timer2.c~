@@ -1,0 +1,8 @@
+#include <stdint.h>
+#include <stdbool.h>
+
+bool timer_create(int a)
+{
+	printf("bbbb");
+	return (true);
+}
