@@ -8,5 +8,6 @@
 void system_init(void);
 bool system_start(void);
 void system_delay(system_tick_t);
+system_tick_t system_get_tick_count(void);
 
 #endif /* __SYSTEM_SYSTEM_H__ */

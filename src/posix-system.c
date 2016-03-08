@@ -11,6 +11,7 @@
 
 #include "posix-system.h"
 #include "posix-task.h"
+#include "posix-timer.h"
 
 #define NSEC_IN_SEC (1000000000L)
 
@@ -21,7 +22,11 @@ static void *posix_task_wrapper(void *arg);
 void
 system_init()
 {
+    task_t test_task;
+
     memset(tasks, 0, sizeof(tasks));
+
+    tmr_init(&test_task);
 }
 
 void
@@ -44,6 +49,16 @@ system_delay_to_timespec(system_tick_t delay, struct timespec *ts)
     ts->tv_sec += ct.tv_sec;
     ts->tv_sec += ts->tv_nsec / NSEC_IN_SEC;
     ts->tv_nsec %= NSEC_IN_SEC;
+}
+
+system_tick_t
+system_get_tick_count(void)
+{
+    struct timespec ct;
+
+    clock_gettime(CLOCK_REALTIME, &ct);
+    return (ct.tv_sec * SYSTEM_CONFIG_POSIX_TICKS_1S)
+        + (ct.tv_nsec * (SYSTEM_CONFIG_POSIX_TICKS_1S / NSEC_IN_SEC));
 }
 
 bool
