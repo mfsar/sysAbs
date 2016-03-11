@@ -17,11 +17,11 @@ typedef portTickType system_tick_t;
 #  include <stdbool.h>
 
 #  if !defined(SYSTEM_TICK_RATE_MS)
-#    define SYSTEM_TICK_RATE_MS                           (1000)
+#    define SYSTEM_TICK_RATE_MS                     (1000)
 #  endif
 
-#  if !defined(SYSTEM_CONFIG_POSIX_MAX_TASKS)
-#    define SYSTEM_CONFIG_POSIX_MAX_TASKS                 (10)
+#  if !defined(SYSTEM_CONFIG_MAX_TASKS)
+#    define SYSTEM_CONFIG_MAX_TASKS                 (10)
 #  endif
 
 /* type definitions */

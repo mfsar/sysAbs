@@ -16,7 +16,7 @@ void producer(void *arg)
     for(;;) {
         system_delay(id * 1000);
         printf("Producer %u pushed\n", (unsigned int)id);
-        queue_push(&q, &id, 1000);
+        queue_push(q, &id, 1000);
     }
 }
 
@@ -26,7 +26,7 @@ void consumer(void *arg)
 
     for(;;) {
         uintptr_t data;
-        if(queue_pop(&q, &data, 800)) {
+        if(queue_pop(q, &data, 800)) {
             printf("Consumer received: %u\n", (unsigned int)data);
             continue;
         }
@@ -51,7 +51,7 @@ int main(void)
     }
     
     system_start();
-    queue_destroy(&q);
+    queue_destroy(q);
 
     return 0;
 }

@@ -44,7 +44,7 @@ tmr_run(void* arg)
     system_tick_t ticks_to_callback, current_ticks;
     
     while (1) {
-        mutex_lock(&psx_tmr_mtx, SYSTEM_MAX_WAIT);
+        mutex_lock(psx_tmr_mtx, SYSTEM_MAX_WAIT);
         current_timer = ((posix_timer_t*)(timer_list->handle))->next_timer;
         if (current_timer!=NULL) {
             current_posix_timer = ((posix_timer_t*)(current_timer->handle));
@@ -57,10 +57,10 @@ tmr_run(void* arg)
         } else {
             ticks_to_callback = SYSTEM_MAX_WAIT;
         }
-        mutex_unlock(&psx_tmr_mtx);
+        mutex_unlock(psx_tmr_mtx);
 
-        if (!smphr_take(&psx_tmr_s, ticks_to_callback)) {
-            mutex_lock(&psx_tmr_mtx, SYSTEM_MAX_WAIT);
+        if (!smphr_take(psx_tmr_s, ticks_to_callback)) {
+            mutex_lock(psx_tmr_mtx, SYSTEM_MAX_WAIT);
             if (current_timer != NULL) {
                 current_posix_timer->callback(NULL);
                 tmr_stop_locked(current_timer);
@@ -68,7 +68,7 @@ tmr_run(void* arg)
                     tmr_start_locked(current_timer, current_timer->period);
                 }
             }
-            mutex_unlock(&psx_tmr_mtx);
+            mutex_unlock(psx_tmr_mtx);
         }    
     }
 }
@@ -104,7 +104,7 @@ tmr_start(tmr_t *t, system_tick_t period)
 {
     posix_timer_t *current_timer;
     
-    mutex_lock(&psx_tmr_mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(psx_tmr_mtx, SYSTEM_MAX_WAIT);
     current_timer = ((posix_timer_t*)(t->handle));
     
     if (current_timer->is_running == (true)) {
@@ -116,8 +116,8 @@ tmr_start(tmr_t *t, system_tick_t period)
     current_timer->is_running = (true);
     
     add_to_timer_list(timer_list, t);
-    smphr_give(&psx_tmr_s);
-    mutex_unlock(&psx_tmr_mtx);
+    smphr_give(psx_tmr_s);
+    mutex_unlock(psx_tmr_mtx);
     return (true);
 }
 
@@ -125,12 +125,12 @@ bool
 tmr_reset(tmr_t *t)
 {
     
-    mutex_lock(&psx_tmr_mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(psx_tmr_mtx, SYSTEM_MAX_WAIT);
     if (!t->period){
-        mutex_unlock(&psx_tmr_mtx);
+        mutex_unlock(psx_tmr_mtx);
         return (false);
     }
-    mutex_unlock(&psx_tmr_mtx);
+    mutex_unlock(psx_tmr_mtx);
     return tmr_start(t, t->period);
 }
 
@@ -139,19 +139,19 @@ tmr_stop(tmr_t *t)
 {
     posix_timer_t *posix_timer;
     
-    mutex_lock(&psx_tmr_mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(psx_tmr_mtx, SYSTEM_MAX_WAIT);
     posix_timer = ((posix_timer_t*)(t->handle));
     if (posix_timer->is_running) {
         delete_from_timer_list(timer_list, t);
-        smphr_give(&psx_tmr_s);
+        smphr_give(psx_tmr_s);
         
         posix_timer->wakeup_time = 0;
         posix_timer->is_running = (false);
-        mutex_unlock(&psx_tmr_mtx);
+        mutex_unlock(psx_tmr_mtx);
         
         return (true);
     }
-    mutex_unlock(&psx_tmr_mtx);
+    mutex_unlock(psx_tmr_mtx);
     return (true);
 }
 
@@ -160,9 +160,9 @@ tmr_is_running(tmr_t *t)
 {
     bool state;
     
-    mutex_lock(&psx_tmr_mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(psx_tmr_mtx, SYSTEM_MAX_WAIT);
     state = ((posix_timer_t*)(t->handle))->is_running;
-    mutex_unlock(&psx_tmr_mtx);
+    mutex_unlock(psx_tmr_mtx);
     return state;
 }
 
@@ -233,7 +233,7 @@ tmr_start_locked(tmr_t *t, system_tick_t period)
     current_timer->is_running = (true);
     
     add_to_timer_list(timer_list, t);
-    smphr_give(&psx_tmr_s);
+    smphr_give(psx_tmr_s);
     return (true);
 }
 
@@ -245,7 +245,7 @@ tmr_stop_locked(tmr_t *t)
     posix_timer = ((posix_timer_t*)(t->handle));
     if (posix_timer->is_running) {
         delete_from_timer_list(timer_list, t);
-        smphr_give(&psx_tmr_s);
+        smphr_give(psx_tmr_s);
         
         posix_timer->wakeup_time = 0;
         posix_timer->is_running = (false);
