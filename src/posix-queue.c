@@ -50,12 +50,12 @@ ok:
 size_t
 queue_elements_count(queue_t queue)
 {
-    posix_queue_t *q = *(posix_queue_t **)queue;
+    posix_queue_t *q = (posix_queue_t *)queue;
     size_t elements;
 
-    mutex_lock(&q->mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(q->mtx, SYSTEM_MAX_WAIT);
     elements = q->elements;
-    mutex_unlock(&q->mtx);
+    mutex_unlock(q->mtx);
 
     return elements;
 }
@@ -63,21 +63,41 @@ queue_elements_count(queue_t queue)
 bool
 queue_push(queue_t queue, void *el, system_tick_t ticks)
 {
-    posix_queue_t *q = *(posix_queue_t **)queue;
+    posix_queue_t *q = (posix_queue_t *)queue;
     void *start;
 
-    mutex_lock(&q->mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(q->mtx, SYSTEM_MAX_WAIT);
     if(q->elements == q->size) {
-        mutex_unlock(&q->mtx);
+        mutex_unlock(q->mtx);
         return false;
     }
 
     start = q->data + (q->index + q->elements) % q->size * q->element_size;
     memcpy(start, el, q->element_size);
     q->elements++;
+    mutex_unlock(q->mtx);
+    smphr_give(q->sem);
 
-    mutex_unlock(&q->mtx);
-    smphr_give(&q->sem);
+    return true;
+}
+
+bool
+queue_push_to_front(queue_t queue, void *el, system_tick_t ticks)
+{
+    posix_queue_t *q = (posix_queue_t *)queue;
+
+    mutex_lock(q->mtx, SYSTEM_MAX_WAIT);
+    if(q->elements == q->size) {
+        mutex_unlock(q->mtx);
+        return false;
+    }
+
+    memmove(q->data + q->element_size, q->data, (q->index + q->elements) % q->size * q->element_size);
+    memcpy(q->data, el, q->element_size);
+    q->elements++;
+
+    mutex_unlock(q->mtx);
+    smphr_give(q->sem);
 
     return true;
 }
@@ -85,19 +105,19 @@ queue_push(queue_t queue, void *el, system_tick_t ticks)
 bool
 queue_pop(queue_t queue, void *el, system_tick_t ticks)
 {
-    posix_queue_t *q = *(posix_queue_t **)queue;
+    posix_queue_t *q = (posix_queue_t *)queue;
     void *start;
 
-    if(!smphr_take(&q->sem, ticks)) {
+    if(!smphr_take(q->sem, ticks)) {
         return false;
     }
 
-    mutex_lock(&q->mtx, SYSTEM_MAX_WAIT);
+    mutex_lock(q->mtx, SYSTEM_MAX_WAIT);
     start = q->data + q->index * q->element_size;
     memcpy(el, start, q->element_size);
     q->index = (q->index + 1) % q->size;
     q->elements--;
-    mutex_unlock(&q->mtx);
+    mutex_unlock(q->mtx);
 
     return true;
 }
@@ -105,10 +125,10 @@ queue_pop(queue_t queue, void *el, system_tick_t ticks)
 void
 queue_destroy(queue_t queue)
 {
-    posix_queue_t *q = *(posix_queue_t **)queue;
+    posix_queue_t *q = (posix_queue_t *)queue;
 
-    smphr_destroy(&q->sem);
-    mutex_destroy(&q->mtx);
+    smphr_destroy(q->sem);
+    mutex_destroy(q->mtx);
     free(q->data);
     free(q);
 }
