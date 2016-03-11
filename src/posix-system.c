@@ -51,6 +51,15 @@ system_delay_to_timespec(system_tick_t delay, struct timespec *ts)
     ts->tv_nsec %= NSEC_IN_SEC;
 }
 
+void
+system_delay(system_tick_t ticks)
+{
+    struct timespec delay;
+
+    system_ticks_to_timespec(ticks, &delay);
+    nanosleep(&delay, NULL);
+}
+
 system_tick_t
 system_get_tick_count(void)
 {
