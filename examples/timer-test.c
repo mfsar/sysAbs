@@ -1,8 +1,9 @@
+#include <system/system.h>
+#include <system/timer.h>
+#include <system/task.h>
+
 #include <stddef.h>
 #include <stdio.h>
-#include <system/timer.h>
-#include <system/system.h>
-#include <system/task.h>
 #include <stdbool.h>
 
 tmr_t test_timer, test_timer_2, test_timer_3, test_timer_4, test_timer_5, test_timer_6;
@@ -132,10 +133,11 @@ void test_others(void* arg)
 int main(void)
 {
     task_t test_task, test_task_2;
-    
+
     printf("System abstraction test - POSIX implementation\n");
 
     system_init();
+
     tmr_create(&test_timer, true, test, NULL);
     tmr_start(&test_timer, 250);
     tmr_create(&test_timer_2, true, test_2, NULL);
@@ -146,7 +148,15 @@ int main(void)
     tmr_create(&test_timer_6, true, test_6, NULL);
     task_create(&test_task, test_others, NULL, NULL, 0, 0);
     task_create(&test_task_2, test_reset, NULL, NULL, 0, 0);
+
     system_start();
-    
+
+    tmr_destroy(test_timer);
+    tmr_destroy(test_timer_2);
+    tmr_destroy(test_timer_3);
+    tmr_destroy(test_timer_4);
+    tmr_destroy(test_timer_5);
+    tmr_destroy(test_timer_6);
+
     return 0;
 }

@@ -117,6 +117,8 @@ system_start()
         task_destroy(tasks[i]);
     }
 
+    tmr_destroy_list();
+
     return retval;
 }
 

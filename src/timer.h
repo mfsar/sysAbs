@@ -23,4 +23,6 @@ bool tmr_stop(tmr_t *t);
 bool tmr_isr_stop(tmr_t *t, bool * const woken);
 bool tmr_is_running(tmr_t *t);
 
+void tmr_destroy(tmr_t t);
+
 #endif /* __SYSTEM_TIMER_H__ */

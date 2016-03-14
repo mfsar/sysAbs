@@ -36,6 +36,24 @@ tmr_init(task_t *t)
     return (true);
 }
 
+void
+tmr_destroy(tmr_t t)
+{
+
+    free(t.handle);
+}
+
+void
+tmr_destroy_list()
+{
+
+    mutex_destroy(psx_tmr_mtx);
+    smphr_destroy(psx_tmr_s);
+
+    free(timer_list->handle);
+    free(timer_list);
+}
+
 void 
 tmr_run(void* arg)
 {
@@ -254,9 +272,4 @@ tmr_stop_locked(tmr_t *t)
     }
     return (true);
 }
-
-
-
-
-
 

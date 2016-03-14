@@ -19,5 +19,6 @@ typedef struct {
 } posix_timer_t;
 
 bool tmr_init(task_t *t);
+void tmr_destroy_list();
 
 #endif /* __SYSTEM_POSIX_TIMER_H__ */
