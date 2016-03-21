@@ -85,6 +85,7 @@ bool
 queue_push_to_front(queue_t queue, void *el, system_tick_t ticks)
 {
     posix_queue_t *q = (posix_queue_t *)queue;
+    void *start;
 
     mutex_lock(q->mtx, SYSTEM_MAX_WAIT);
     if(q->elements == q->size) {
@@ -92,8 +93,16 @@ queue_push_to_front(queue_t queue, void *el, system_tick_t ticks)
         return false;
     }
 
-    memmove(q->data + q->element_size, q->data, (q->index + q->elements) % q->size * q->element_size);
-    memcpy(q->data, el, q->element_size);
+    if (q->index == 0){
+        start = q->data + (q->size - 1) * q->element_size;
+        memcpy(start, el, q->element_size);
+        q->index = q->size - 1;
+    }
+    else {
+        start = q->data + (q->index - 1) * q->element_size;
+        memcpy(start, el, q->element_size);
+        q->index--;
+    }
     q->elements++;
 
     mutex_unlock(q->mtx);

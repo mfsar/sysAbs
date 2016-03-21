@@ -4,19 +4,32 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 static queue_t q;
 
 void producer(void *arg)
 {
     uintptr_t id = (uintptr_t)arg;
+    bool result;
 
     printf("Producer %u started\n", (unsigned int)id);
 
     for(;;) {
-        system_delay(id * 1000);
-        printf("Producer %u pushed\n", (unsigned int)id);
-        queue_push(q, &id, 1000);
+        if ((unsigned int)id == 5) {
+            system_delay(1000);
+
+            result = queue_push_to_front(q, &id, 1000);
+            printf("Producer %u pushed to front, result: %s \n",
+                  (unsigned int)id, result ? "true" : "false");
+        }
+        else {
+            system_delay(1000);
+
+            result = queue_push(q, &id, 1000);
+            printf("Producer %u pushed, result: %s \n",
+                  (unsigned int)id, result ? "true" : "false");
+        }
     }
 }
 
@@ -26,8 +39,9 @@ void consumer(void *arg)
 
     for(;;) {
         uintptr_t data;
+        system_delay(1100);
         if(queue_pop(q, &data, 800)) {
-            printf("Consumer received: %u\n", (unsigned int)data);
+            printf("\nConsumer received: %u\n\n", (unsigned int)data);
             continue;
         }
         printf("Consumer timeout\n");
@@ -44,7 +58,7 @@ int main(void)
 
     system_init();
 
-    queue_create(&q, PRODUCERS, sizeof(uintptr_t), NULL);
+    queue_create(&q, PRODUCERS + 15, sizeof(uintptr_t), NULL);
     task_create(&c, consumer, NULL, NULL, 0, 0);
     for(i = 0; i < PRODUCERS; ++i) {
         task_create(&p[i], producer, (void*)(uintptr_t)i + 1, NULL, 0, 0);
